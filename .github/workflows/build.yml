@@ -12,29 +12,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
     
-    - name: Setup Java
-      uses: actions/setup-java@v4
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
       with:
-        distribution: 'zulu'
+        distribution: 'temurin'
         java-version: '11'
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.10.6'
+        flutter-version: '3.7.12'
         channel: 'stable'
-        cache: true
     
-    - name: Get dependencies
+    - name: Install dependencies
       run: flutter pub get
     
-    - name: Build APK (skip analysis)
-      run: flutter build apk --release --no-tree-shake-icons
+    - name: Analyze project source
+      run: flutter analyze --no-fatal-infos
     
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
+    - name: Run tests
+      run: flutter test --no-pub --coverage
+      continue-on-error: true
+    
+    - name: Build APK
+      run: flutter build apk --release --split-per-abi
+    
+    - name: Upload APK artifacts
+      uses: actions/upload-artifact@v3
       with:
-        name: church-memorization-app-release
-        path: build/app/outputs/flutter-apk/app-release.apk 
+        name: app-release-apks
+        path: build/app/outputs/flutter-apk/*.apk 
