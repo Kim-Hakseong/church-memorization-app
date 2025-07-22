@@ -20,6 +20,7 @@ class VerseRepository {
     
     // Check if data already exists
     if (versesBox.isNotEmpty && eventsBox.isNotEmpty) {
+      debugPrint('📦 기존 캐시 데이터 사용');
       return;
     }
     

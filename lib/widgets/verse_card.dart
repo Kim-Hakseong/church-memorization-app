@@ -21,154 +21,326 @@ class VerseCard extends StatelessWidget {
     final verse = provider.getVerseForWeek(sheetName, weekType);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final isCompact = screenWidth < 600 || screenHeight < 700;
+    final isCompact = screenWidth < 600 || screenHeight < 800;
+    final isVeryCompact = screenHeight < 700;
     
     return Container(
       margin: EdgeInsets.symmetric(
         horizontal: isCompact ? 8.0 : 12.0,
-        vertical: isCompact ? 4.0 : 6.0,
+        vertical: isVeryCompact ? 2.0 : (isCompact ? 3.0 : 6.0),
       ),
       decoration: BoxDecoration(
-        gradient: _getGradientForWeekType(weekType),
+        // Tailwind 스타일 그라데이션
+        gradient: _getTailwindGradient(weekType),
         borderRadius: BorderRadius.circular(20),
+        // 다층 그림자 효과 (Tailwind shadow-xl + custom)
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: _getShadowColor(weekType).withOpacity(0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: _getShadowColor(weekType).withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
           ),
         ],
+        // 미묘한 테두리
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(isCompact ? 14.0 : 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isCompact ? 10 : 12, 
-                    vertical: isCompact ? 4 : 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: isCompact ? 12 : 14,
-                      fontWeight: FontWeight.w600,
-                      color: _getColorForWeekType(weekType),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: isCompact ? 8 : 12),
-            if (verse != null) ...[
-              if (verse.extra != null && verse.extra!.isNotEmpty) ...[
-                Text(
-                  verse.extra!,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: _getColorForWeekType(weekType),
-                    fontSize: isCompact ? 12 : 14,
-                  ),
-                ),
-                SizedBox(height: isCompact ? 4 : 6),
-              ],
-              Text(
-                verse.text,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.3,
-                  fontSize: isCompact ? 12 : 14,
-                  color: Colors.black87,
-                ),
-                maxLines: isCompact ? 2 : 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: isCompact ? 6 : 8),
-              Text(
-                DateFormat('yyyy년 M월 d일').format(verse.date),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: _getColorForWeekType(weekType).withValues(alpha: 0.7),
-                  fontSize: isCompact ? 10 : 11,
-                ),
-              ),
-            ] else ...[
-              Container(
-                padding: EdgeInsets.all(isCompact ? 8 : 12),
+            // 배경 패턴 오버레이
+            Positioned.fill(
+              child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Colors.white.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.book_outlined,
-                      size: isCompact ? 24 : 32,
-                      color: _getColorForWeekType(weekType).withValues(alpha: 0.5),
+              ),
+            ),
+            
+            // 메인 콘텐츠
+            Padding(
+              padding: EdgeInsets.all(isVeryCompact ? 14.0 : (isCompact ? 16.0 : 20.0)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 타이틀 뱃지
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isVeryCompact ? 8 : (isCompact ? 10 : 14), 
+                          vertical: isVeryCompact ? 4 : (isCompact ? 5 : 7),
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _getIconForWeekType(weekType),
+                              size: isVeryCompact ? 12 : (isCompact ? 13 : 15),
+                              color: _getAccentColor(weekType),
+                            ),
+                            SizedBox(width: isCompact ? 4 : 6),
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontSize: isVeryCompact ? 11 : (isCompact ? 12 : 14),
+                                fontWeight: FontWeight.w700,
+                                color: _getAccentColor(weekType),
+                                letterSpacing: -0.02,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: isVeryCompact ? 10 : (isCompact ? 12 : 16)),
+                  
+                  // 콘텐츠 영역
+                  if (verse != null) ...[
+                    // 공과명 (있는 경우)
+                    if (verse.extra != null && verse.extra!.isNotEmpty) ...[
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isCompact ? 10 : 12,
+                          vertical: isCompact ? 4 : 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getAccentColor(weekType).withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          verse.extra!,
+                                                  style: TextStyle(
+                          fontSize: isVeryCompact ? 10 : (isCompact ? 11 : 13),
+                          fontWeight: FontWeight.w600,
+                          color: _getAccentColor(weekType),
+                          letterSpacing: -0.01,
+                        ),
+                        ),
+                      ),
+                      SizedBox(height: isCompact ? 12 : 16),
+                    ],
+                    
+                    // 암송구절 본문
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(isVeryCompact ? 10 : (isCompact ? 12 : 16)),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.5),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        verse.text,
+                        style: TextStyle(
+                          fontSize: isVeryCompact ? 12 : (isCompact ? 13 : 15),
+                          fontWeight: FontWeight.w500,
+                          height: isVeryCompact ? 1.4 : 1.5,
+                          color: const Color(0xFF1F2937), // gray-800
+                          letterSpacing: -0.01,
+                        ),
+                        maxLines: isVeryCompact ? 3 : (isCompact ? 4 : 5),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    SizedBox(height: isCompact ? 4 : 6),
-                    Text(
-                      '해당 주의 말씀이 없습니다',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: _getColorForWeekType(weekType).withValues(alpha: 0.7),
-                        fontSize: isCompact ? 11 : 12,
+                    
+                    SizedBox(height: isCompact ? 12 : 16),
+                    
+                    // 날짜와 아이콘
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isVeryCompact ? 6 : (isCompact ? 7 : 9),
+                            vertical: isVeryCompact ? 3 : (isCompact ? 4 : 5),
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.calendar_today_rounded,
+                                size: isVeryCompact ? 10 : (isCompact ? 11 : 13),
+                                color: _getAccentColor(weekType).withOpacity(0.7),
+                              ),
+                              SizedBox(width: isCompact ? 4 : 6),
+                              Text(
+                                DateFormat('M월 d일').format(verse.date),
+                                style: TextStyle(
+                                  fontSize: isVeryCompact ? 9 : (isCompact ? 10 : 12),
+                                  fontWeight: FontWeight.w500,
+                                  color: _getAccentColor(weekType).withOpacity(0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    // 빈 상태 디자인
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(isCompact ? 20 : 28),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border(
+                          top: BorderSide(
+                            color: _getAccentColor(weekType).withOpacity(0.3),
+                            width: 3,
+                          ),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: _getAccentColor(weekType).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Icon(
+                              Icons.auto_stories_rounded,
+                              size: isCompact ? 28 : 36,
+                              color: _getAccentColor(weekType).withOpacity(0.6),
+                            ),
+                          ),
+                          SizedBox(height: isCompact ? 12 : 16),
+                          Text(
+                            '해당 주의 말씀이\n아직 준비되지 않았습니다',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: isCompact ? 13 : 15,
+                              fontWeight: FontWeight.w500,
+                              color: _getAccentColor(weekType).withOpacity(0.7),
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ),
     );
   }
   
-  Color _getColorForWeekType(WeekType weekType) {
+  // Tailwind CSS 인스파이어드 색상들
+  Color _getAccentColor(WeekType weekType) {
     switch (weekType) {
       case WeekType.last:
-        return const Color(0xFF8B7355);
+        return const Color(0xFF8B5CF6); // violet-500
       case WeekType.current:
-        return const Color(0xFF5B7C99);
+        return const Color(0xFF6366F1); // indigo-500
       case WeekType.next:
-        return const Color(0xFF7A9B76);
+        return const Color(0xFF10B981); // emerald-500
     }
   }
   
-  LinearGradient _getGradientForWeekType(WeekType weekType) {
+  Color _getShadowColor(WeekType weekType) {
     switch (weekType) {
       case WeekType.last:
+        return const Color(0xFF8B5CF6); // violet-500
+      case WeekType.current:
+        return const Color(0xFF6366F1); // indigo-500
+      case WeekType.next:
+        return const Color(0xFF10B981); // emerald-500
+    }
+  }
+  
+  IconData _getIconForWeekType(WeekType weekType) {
+    switch (weekType) {
+      case WeekType.last:
+        return Icons.history_rounded;
+      case WeekType.current:
+        return Icons.today_rounded;
+      case WeekType.next:
+        return Icons.upcoming_rounded;
+    }
+  }
+  
+  LinearGradient _getTailwindGradient(WeekType weekType) {
+    switch (weekType) {
+      case WeekType.last:
+        // Violet gradient
         return const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFF0EBE3),
-            Color(0xFFE8E2D4),
+            Color(0xFFF3E8FF), // violet-50
+            Color(0xFFE9D5FF), // violet-100
+            Color(0xFFDDD6FE), // violet-200
           ],
+          stops: [0.0, 0.5, 1.0],
         );
       case WeekType.current:
+        // Indigo gradient
         return const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFE3F2FD),
-            Color(0xFFBBDEFB),
+            Color(0xFFEEF2FF), // indigo-50
+            Color(0xFFE0E7FF), // indigo-100
+            Color(0xFFC7D2FE), // indigo-200
           ],
+          stops: [0.0, 0.5, 1.0],
         );
       case WeekType.next:
+        // Emerald gradient
         return const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFE8F5E8),
-            Color(0xFFDCEDC8),
+            Color(0xFFECFDF5), // emerald-50
+            Color(0xFFD1FAE5), // emerald-100
+            Color(0xFFA7F3D0), // emerald-200
           ],
+          stops: [0.0, 0.5, 1.0],
         );
     }
   }
