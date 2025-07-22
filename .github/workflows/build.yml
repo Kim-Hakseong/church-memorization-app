@@ -3,8 +3,6 @@ name: Build Flutter APK
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -12,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Setup Java JDK
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
@@ -31,10 +29,10 @@ jobs:
       run: flutter pub get
     
     - name: Build APK
-      run: flutter build apk --release --split-per-abi
+      run: flutter build apk --release
     
-    - name: Upload APK artifacts
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: app-release-apks
-        path: build/app/outputs/flutter-apk/*.apk 
+        name: church-memorization-app
+        path: build/app/outputs/flutter-apk/app-release.apk 

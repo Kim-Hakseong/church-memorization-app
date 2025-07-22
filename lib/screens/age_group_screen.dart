@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/verse_provider.dart';
 import '../widgets/verse_card.dart';
-import '../services/screenshot_service.dart';
+
 
 class AgeGroupScreen extends StatelessWidget {
   final String sheetName;
@@ -42,33 +42,9 @@ class AgeGroupScreen extends StatelessWidget {
             flexibleSpace: Container(
               decoration: _getHeaderGradient(displayName),
             ),
-            actions: [
-              if (ScreenshotService.isScreenshotSupported())
-                Container(
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.camera_alt_rounded,
-                      color: Colors.white,
-                    ),
-                    tooltip: '화면 저장',
-                    onPressed: () => _captureScreen(context, displayName),
-                  ),
-                ),
-            ],
           ),
           extendBodyBehindAppBar: true,
-          body: RepaintBoundary(
-            key: ScreenshotService.getRepaintBoundaryKey(displayName),
-            child: Container(
+          body: Container(
               decoration: _getBackgroundGradient(displayName),
               child: RefreshIndicator(
                 onRefresh: () => provider.refresh(),
@@ -126,7 +102,6 @@ class AgeGroupScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
         );
       },
     );
@@ -486,87 +461,6 @@ class AgeGroupScreen extends StatelessWidget {
         return const Color(0xFF10B981); // emerald-500
       default:
         return const Color(0xFF6366F1);
-    }
-  }
-
-  /// 스크린샷 캡처 및 다운로드
-  static Future<void> _captureScreen(BuildContext context, String displayName) async {
-    try {
-      // 로딩 스낵바 표시
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Container(
-                width: 20,
-                height: 20,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Text(
-                '화면을 저장하는 중...',
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          backgroundColor: const Color(0xFF6366F1),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-
-      // 스크린샷 캡처
-      await ScreenshotService.captureAndDownload(displayName);
-
-      // 성공 스낵바 표시
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.white),
-                const SizedBox(width: 12),
-                Text(
-                  '$displayName 암송구절이 저장되었습니다!',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFF10B981),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    } catch (e) {
-      // 에러 스낵바 표시
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_rounded, color: Colors.white),
-                const SizedBox(width: 12),
-                const Text(
-                  '저장 중 오류가 발생했습니다',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFFEF4444),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
     }
   }
 } 
