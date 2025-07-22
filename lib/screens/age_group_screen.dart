@@ -44,7 +44,8 @@ class AgeGroupScreen extends StatelessWidget {
             ),
           ),
           extendBodyBehindAppBar: true,
-          body: Container(
+          body: SafeArea(
+            child: Container(
               decoration: _getBackgroundGradient(displayName),
               child: RefreshIndicator(
                 onRefresh: () => provider.refresh(),
@@ -102,6 +103,7 @@ class AgeGroupScreen extends StatelessWidget {
                 ),
               ),
             ),
+          ),
         );
       },
     );

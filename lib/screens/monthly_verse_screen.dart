@@ -43,7 +43,8 @@ class MonthlyVerseScreen extends StatelessWidget {
             ),
           ),
           extendBodyBehindAppBar: true,
-          body: Container(
+          body: SafeArea(
+            child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,

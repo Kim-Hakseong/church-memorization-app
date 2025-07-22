@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../providers/verse_provider.dart';
-import 'package:intl/intl.dart';
 
 class VerseCard extends StatelessWidget {
   final String title;
@@ -182,41 +181,7 @@ class VerseCard extends StatelessWidget {
                     ),
                     
                     SizedBox(height: isCompact ? 12 : 16),
-                    
-                    // 날짜와 아이콘
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isVeryCompact ? 6 : (isCompact ? 7 : 9),
-                            vertical: isVeryCompact ? 3 : (isCompact ? 4 : 5),
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                size: isVeryCompact ? 10 : (isCompact ? 11 : 13),
-                                color: _getAccentColor(weekType).withOpacity(0.7),
-                              ),
-                              SizedBox(width: isCompact ? 4 : 6),
-                              Text(
-                                DateFormat('M월 d일').format(verse.date),
-                                style: TextStyle(
-                                  fontSize: isVeryCompact ? 9 : (isCompact ? 10 : 12),
-                                  fontWeight: FontWeight.w500,
-                                  color: _getAccentColor(weekType).withOpacity(0.8),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+
                   ] else ...[
                     // 빈 상태 디자인
                     Container(
